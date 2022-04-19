@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, { FunctionComponent } from 'react'
 import styled from '@emotion/styled'
 import { Link } from 'gatsby'
 
@@ -8,15 +8,6 @@ export type CategoryListProps = {
     [key: string]: number
   }
 }
-// type CategoryItemProps = {
-//   active: boolean
-// }
-
-// type GatsbyLinkProps = {
-//   children: ReactNode
-//   className?: string
-//   to: string
-// } & CategoryItemProps
 
 const CategoryListWrapper = styled.div`
   display: flex;

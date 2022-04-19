@@ -5,6 +5,16 @@ import CategoryList from 'components/base/CategoryList'
 import Introduction from 'components/domain/Introduction'
 import PostList from 'components/domain/PostList'
 import Footer from 'components/base/Footer'
+import { graphql } from 'gatsby'
+import { PostListItemType } from 'types/PostItem.types'
+
+type IndexPageProps = {
+  data: {
+    allMarkdownRemark: {
+      edges: PostListItemType[]
+    }
+  }
+}
 
 const CATEGORY_LIST = {
   All: 5,
@@ -18,16 +28,44 @@ const Container = styled.div`
   height: 100vh;
 `
 
-const IndexPage: FunctionComponent = function () {
+const IndexPage: FunctionComponent<IndexPageProps> = ({
+  data: {
+    allMarkdownRemark: { edges },
+  },
+}) => {
+  console.log('ed', edges)
   return (
     <Container>
       <GlobalStyle />
       <Introduction />
       <CategoryList selectedCategory="Web" categoryList={CATEGORY_LIST} />
-      <PostList />
+      <PostList posts={edges} />
       <Footer />
     </Container>
   )
 }
 
 export default IndexPage
+
+export const getPostList = graphql`
+  query getPostList {
+    allMarkdownRemark(
+      sort: { order: DESC, fields: [frontmatter___date, frontmatter___title] }
+    ) {
+      edges {
+        node {
+          id
+          frontmatter {
+            title
+            summary
+            date(formatString: "YYYY.MM.DD.")
+            categories
+            thumbnail {
+              publicURL
+            }
+          }
+        }
+      }
+    }
+  }
+`
