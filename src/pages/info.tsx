@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { graphql } from 'gatsby'
 import styled from '@emotion/styled'
 import { Global, css } from '@emotion/react'
+import ProfileImg from 'components/base/ProfileImage'
 
 type InfoPageProps = {
   data: {
@@ -35,6 +36,7 @@ const InfoPage: FunctionComponent<InfoPageProps> = function ({
     <div>
       <Global styles={globalStyle} />
       {title} {description} {author}
+      <ProfileImg />
     </div>
   )
 }
