@@ -36,7 +36,6 @@ const InfoPage: FunctionComponent<InfoPageProps> = function ({
     <div>
       <Global styles={globalStyle} />
       {title} {description} {author}
-      <ProfileImg />
     </div>
   )
 }
