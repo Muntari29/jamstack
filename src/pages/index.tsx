@@ -1,16 +1,19 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useMemo } from 'react'
 import styled from '@emotion/styled'
 import GlobalStyle from 'components/base/GlobalStyle'
-import CategoryList from 'components/base/CategoryList'
+import CategoryList, { CategoryListProps } from 'components/base/CategoryList'
 import Introduction from 'components/domain/Introduction'
 import PostList from 'components/domain/PostList'
 import Footer from 'components/base/Footer'
 import { graphql } from 'gatsby'
 import { PostListItemType } from 'types/PostItem.types'
-
 import { IGatsbyImageData } from 'gatsby-plugin-image'
+import queryString, { ParsedQuery } from 'query-string'
 
 type IndexPageProps = {
+  location: {
+    search: string
+  }
   data: {
     allMarkdownRemark: {
       edges: PostListItemType[]
@@ -23,12 +26,6 @@ type IndexPageProps = {
   }
 }
 
-const CATEGORY_LIST = {
-  All: 5,
-  Web: 3,
-  Mobile: 2,
-}
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -36,6 +33,7 @@ const Container = styled.div`
 `
 
 const IndexPage: FunctionComponent<IndexPageProps> = ({
+  location: { search },
   data: {
     allMarkdownRemark: { edges },
     file: {
@@ -44,12 +42,49 @@ const IndexPage: FunctionComponent<IndexPageProps> = ({
   },
 }) => {
   console.log('ed', edges)
+  const parsed: ParsedQuery<string> = queryString.parse(search)
+  const selectedCategory: string =
+    typeof parsed.category !== 'string' || !parsed.category
+      ? 'All'
+      : parsed.category
+
+  const categoryList = useMemo(
+    () =>
+      edges.reduce(
+        (
+          list: CategoryListProps['categoryList'],
+          {
+            node: {
+              frontmatter: { categories },
+            },
+          }: PostListItemType,
+        ) => {
+          console.log(edges, 66)
+          categories.forEach(category => {
+            if (list[category] === undefined) list[category] = 1
+            else list[category]++
+          })
+
+          list['All']++
+
+          return list
+        },
+        { All: 0 },
+      ),
+    [],
+  )
+
+  console.log(parsed, selectedCategory, categoryList, 55)
+
   return (
     <Container>
       <GlobalStyle />
       <Introduction profileImage={gatsbyImageData} />
-      <CategoryList selectedCategory="Web" categoryList={CATEGORY_LIST} />
-      <PostList posts={edges} />
+      <CategoryList
+        selectedCategory={selectedCategory}
+        categoryList={categoryList}
+      />
+      <PostList posts={edges} selectedCategory={selectedCategory} />
       <Footer />
     </Container>
   )
